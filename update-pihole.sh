@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # --- CONFIGURATION ---
 # Define the absolute path to the directory containing your docker-compose.yml
