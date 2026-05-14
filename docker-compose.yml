@@ -38,7 +38,7 @@ services:
       # See https://docs.pi-hole.net/docker/configuration/#note-on-capabilities
       # Optional, if Pi-hole should get some more processing time
       - SYS_NICE
-    restart: unless-stopped
+    restart: always
     healthcheck:
       test: ["CMD", "dig", "+short", "+norecurse", "+retry=0", "@127.0.0.1", "localhost"]
       interval: 30s
