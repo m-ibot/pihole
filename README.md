@@ -1,4 +1,4 @@
-# Pi-hole Podman Deployment
+# Pi-hole Podman Deployment on Fedora (44)
 
 This repository manages a Pi-hole instance deployed using Podman and podman-compose on Fedora.
 
@@ -23,7 +23,8 @@ First, try to start the container. If you run in any issue, come back to this se
 
 Port 53 is the port used for DNS resolution and it is required to be used by pihole to actually work as a DNS server.
 
-The Pihole documentation references to docker, but in this case we use podman instead. Docker and Podman are mostly comatible, but there is one difference between both of them: Podman runs rootless containers and has therefore less permissions on the host system This is actually a security advantage, but causes an error in this case.
+The Pihole documentation references to docker, but in this case we use podman instead. Docker and Podman are mostly comatible, but there is one difference between both of them:
+Podman runs rootless containers and has therefore less permissions on the host system This is actually a security advantage, but causes an error in this case.
 
 If you run in this error, see the article ["Rootless podman is unable to use host ports less than 1024" in the RedHat knowledgebase](https://access.redhat.com/solutions/7044059)
 
@@ -55,6 +56,17 @@ Next, `systemd-resolved` needs to get restarted:
 ```
 sudo systemctl restart systemd-resolved
 ```
+
+#### Container not restarting after reboot
+
+By default, user-level systemd services only start after that user logs into the machine. We need to enable "linger" for the user account.
+This tells Fedora: "Treat this user's services like system services and start them at boot, even if they aren't logged in."
+`loginctl enable-linger $USER`
+
+Now that the system is allowed to run the user's services at boot, we need to enable the podman-restart service specifically for that user account, rather than the root system:
+`systemctl --user enable --now podman-restart.service`
+
+Now, the podman containers should start automated after a system reboot.
 
 
 ### Starting and Stopping
