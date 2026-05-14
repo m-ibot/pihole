@@ -79,6 +79,25 @@ Explanation:
 
 The password that is set here, can be used to ligin via the pihole WebUI 
 
+### Healthcheck
+The `docker-compose.yml` includes a healthcheck to ensure the DNS service is actually responding.
+
+**How it works:**
+Every 30 seconds, Podman runs the following command inside the container:
+`dig +short +norecurse +retry=0 @127.0.0.1 localhost`
+
+*   **`dig`**: A DNS lookup tool.
+*   **`+short`**: Returns only the IP address to keep logs clean.
+*   **`+norecurse`**: Ensures the check is purely local; it doesn't ask upstream servers on the internet.
+*   **`+retry=0`**: Fails immediately if the first attempt doesn't work (Podman handles retries).
+*   **`@127.0.0.1`**: Forces the query to the local Pi-hole service.
+*   **`localhost`**: A standard domain that should always resolve to `127.0.0.1`.
+
+**Timing Configuration:**
+- **Interval (30s)**: How often the check runs.
+- **Start Period (30s)**: A grace period during startup (to allow the gravity database to load) where failures are ignored.
+- **Retries (3)**: The container is only marked "unhealthy" after 3 consecutive failures.
+
 ## Configuration Details
 
 ### Key Files
