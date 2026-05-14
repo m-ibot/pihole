@@ -1,0 +1,41 @@
+# More info at https://github.com/pi-hole/docker-pi-hole/ and https://docs.pi-hole.net/
+services:
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    hostname: pihole-on-fedora
+    dns:
+      # dnsforge.de Normal, see https://dnsforge.de/#dnsdaten
+      - 49.12.67.122
+      # DNS4EU Protective + Ad Blocking, see https://joindns4.eu/for-public#resolver-options
+      - 86.54.11.13
+    ports:
+      # DNS Ports
+      - "53:53/tcp"
+      - "53:53/udp"
+      # Default HTTP Port
+      - "80:80/tcp"
+      # Default HTTPs Port. FTL will generate a self-signed certificate
+      - "443:443/tcp"
+    environment:
+      # Set the appropriate timezone for your location from
+      # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones, e.g:
+      TZ: 'Europe/Berlin'
+      # I dont't want to set a password in my config file here. Instead I open a bash in the conatiner and run
+      # `pihole setpassword`. It's an additional manual script, but currently the easiest way for my needs.
+      # FTLCONF_webserver_api_password: 'randompassword'
+      # If using Docker's default `bridge` network setting the dns listening mode should be set to 'ALL'
+      FTLCONF_dns_listeningMode: 'ALL'
+      FTLCONF_dns_upstreams: '49.12.67.122;86.54.11.13'
+    # Volumes store your data between container upgrades
+    volumes:
+      # For persisting Pi-hole's databases and common configuration file
+      - './etc-pihole:/etc/pihole:Z'
+      # When Pi-hole starts it seems to call local hosts dns resolver on my server. But I deactivated it, because I want
+      # the Pi-hole run on port 53. Therefore the startup fails. With this config, different dns servers are configured.
+      - './resolv.conf:/etc/resolv.conf:Z'
+    cap_add:
+      # See https://docs.pi-hole.net/docker/configuration/#note-on-capabilities
+      # Optional, if Pi-hole should get some more processing time
+      - SYS_NICE
+    restart: unless-stopped
