@@ -5,10 +5,10 @@ services:
     image: pihole/pihole:latest
     hostname: pihole-on-fedora
     dns:
-      # dnsforge.de Normal, see https://dnsforge.de/#dnsdaten
-      - 49.12.67.122
-      # DNS4EU Protective + Ad Blocking, see https://joindns4.eu/for-public#resolver-options
-      - 86.54.11.13
+      # dnsforge.de Blank, see https://dnsforge.de/#dnsdaten
+      - 138.199.149.249
+      # DNS4EU Unfiltered Resolution, see https://joindns4.eu/for-public#resolver-options
+      - 86.54.11.100
     ports:
       # DNS Ports
       - "53:53/tcp"
@@ -26,7 +26,7 @@ services:
       # FTLCONF_webserver_api_password: 'randompassword'
       # If using Docker's default `bridge` network setting the dns listening mode should be set to 'ALL'
       FTLCONF_dns_listeningMode: 'ALL'
-      FTLCONF_dns_upstreams: '49.12.67.122;86.54.11.13'
+      FTLCONF_dns_upstreams: '138.199.149.249;86.54.11.100'
     # Volumes store your data between container upgrades
     volumes:
       # For persisting Pi-hole's databases and common configuration file
